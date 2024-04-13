@@ -5,11 +5,13 @@ def main(system, boundaries, tmin, tmax):
     def naive_extrapolation(l, N):
       return l + [l[-1] for _ in range(N - len(l))]
 
-    N = 25
+    N = 50
     h = (tmax - tmin) / N
     finite_diff_dict = {
         # i == current state
-        2: lambda y, h, i: (y.func(i-1) - 2 * y.func(i) + y.func(i+1))/ (h ** 2),
+        4: lambda y, h, i: (y.func(i+2) - 4 * y.func(i+1) + 6*y.func(i) - 4*y.func(i-1) + y.func(i-2))/ (h ** 4),
+        3: lambda y, h, i: (y.func(i+2) - 2 * y.func(i+1) + 2*y.func(i-1) - y.func(i-2))/ (2*h ** 3),
+        2: lambda y, h, i: (y.func(i+1) - 2 * y.func(i) + y.func(i-1))/ (h ** 2),
         1: lambda y, h, i: (y.func(i+1) - y.func(i)) / h,
         0: lambda y, h, i: y.func(i)
     }
@@ -26,6 +28,7 @@ def main(system, boundaries, tmin, tmax):
         functions.update(eq.find(Function))
 
     vremya = {i.args[0] for i in diff_variables}.pop()
+
     variables = functions - diff_variables
     # diff order total aldready done for diffeqs, now add variables
     diff_order_total = diff_order_total | {v: 0 for v in functions}
