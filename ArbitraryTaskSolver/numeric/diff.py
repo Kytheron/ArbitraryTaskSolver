@@ -1,3 +1,7 @@
+import numpy as np
+import sympy
+from sympy import Symbol, solve, Derivative
+
 
 def numeric_dsolve(
         tmin, tmax, N, #сетка -- скаляры
@@ -29,7 +33,7 @@ def numeric_dsolve(
 
     x_sol = [initial_boundaries[0], initial_boundaries[1] * h + initial_boundaries[0]] # реализовать для уравнений высших порядков
     for i in range(diff_order,N):
-        x_sol.append(y_next.subs({y[0]: x_sol[i-2], y[1]: x_sol[i-1]}).subs({t: tmin + i*h}))
+        x_sol.append(y_next.subs({y[0]: x_sol[i-2], y[1]: x_sol[i-1]}).subs({main_variable.args[0]: tmin + i*h}))
 
     t_sol = np.linspace(tmin, tmax, N)
     return t_sol, x_sol
@@ -48,32 +52,3 @@ def shooting_method(tmin, tmax, N, steps, alpha0, diffeq, boundaries):
 
     return t_sol, x_sol
 
-
-def shooting_method_with_main(tmin, tmax, N, steps, alpha0, diffeqs, boundaries):
-    def validate_and_group_bounds(boundaries):
-        # тут написать проверку что условия являются краевыми и найти условия на левом конце tmin для каждой переменной
-        ret = {}
-        for b in boundaries:
-            if not issubclass(b.lhs__class__, FunctionClass):
-                raise TypeError(f'Lhs should be function object: {b}')
-            if not b.lhs.args[0].is_constant():
-                raise TypeError(f'Argument of function in lhs is not constant: {b}')
-            if b.lhs.args[0] != sympify(tmin) or b.lhs.args[0] != sympify(tmax):
-                raise TypeError(f'Argument not equals tmin or tmax: {b}')
-
-            if b.lhs.func in ret:
-                ret[b.lhs.func] += []
-
-
-
-    h = (tmax - tmin) / N
-    t_sol, x_sol = main(tmin, tmax, N, diffeqs , [boundaries[0], alpha0])
-    t_sol_h, x_sol_h = main(tmin, tmax, N, diffeq, [boundaries[0], alpha0+h])
-    alpha = [alpha0]
-    for n in range(steps):
-        alpha_n = alpha[-1] - ((x_sol[-1] - boundaries[1])*h / (x_sol_h[-1] - x_sol[-1]))
-        alpha.append(alpha_n)
-        t_sol, x_sol = numeric_dsolve(tmin, tmax, N, diffeq, [boundaries[0], alpha[-1]])
-        t_sol_h, x_sol_h = numeric_dsolve(tmin, tmax, N, diffeq, [boundaries[0], alpha[-1]+h])
-
-    return t_sol, x_sol
