@@ -2,10 +2,15 @@
 from matplotlib import pyplot as plt
 
 from ArbitraryTaskSolver.numeric.diff import shooting_method
+from ArbitraryTaskSolver.numeric.diff import numeric_dsolve
 from sympy import *
 import numpy as np
 
-def sosiska():
+from ArbitraryTaskSolver.numeric.diffalg import main
+from ArbitraryTaskSolver.optimization.variational import VTS_max_final_super_extra
+
+
+def shooting_method_test():
     tmin = 0
     tmax = 1
     t = symbols('t')
@@ -26,5 +31,43 @@ def sosiska():
     plt.plot(*exact_sol(), color = 'red', lw = 2, ls = '--')
     plt.show()
 
+#if __name__ == '__main__':
+#    shooting_method_test()
+
+def numeric_dsolve_test():
+    t = symbols('t')
+    x = symbols('x', cls=Function)
+    t_sol, x_sol = numeric_dsolve(0, 50, 500, Eq(x(t).diff(t, 2)  + sin(x(t)) + 75*x(t)**3, 0), [0, 1])
+    plt.plot(t_sol, x_sol)
+    plt.show()
+
+#if __name__ == '__main__':
+#    numeric_dsolve_test()
+
+def main_test():
+    t = symbols('t')
+    x = symbols('x', cls=Function)
+    #T, ret, vars_names = main( [Eq( x(t).diff(t,2), 0  )], [ Eq( x(t).diff(t).subs(t,0), 2), Eq(x(1), 2) ] , 0, 1)
+    #T, ret, vars_names = main( [Eq( x(t).diff(t,3), 0  )], [ Eq( 2*x(0) + x(t).diff(t).subs(t,0), 0), Eq(x(1), 1), Eq(x(t).diff(t,2).subs(t,0), 2) ] , 0, 1)
+    T, ret, vars_names = main( [Eq( x(t).diff(t,4), 0  )], [ Eq(x(0), 0), Eq(x(t).diff(t).subs(t,0), 0), Eq(x(t).diff(t,2).subs(t,1) + x(1), 8/3), Eq(x(t).diff(t,3).subs(t,0), 1) ] , 0, 1)
+    for i in range(len(ret)):
+      plt.scatter(T, ret[vars_names[i]][:len(T)], label=vars_names[i])
+    time = np.linspace(0, 1, 50)
+    plt.plot(time, time**3 / 6 + time**2 / 2, color = 'blue')
+    plt.show()
+
+#if __name__ == '__main__':
+#    main_test()
+
+
+def VTS_test():
+    t = symbols('t')
+    x = symbols('x', cls=Function)
+    L = -2 * x(t) * t + (x(t).diff(t, 2)) ** 2
+    I = Integral(L, (t, 0, 1))
+    B = [[Eq(x(list(I.args[1])[1]), 0), Eq(x(list(I.args[1])[2]), 1 / 120), Eq((x(t).diff(t)).subs(t, list(I.args[1])[1]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[2]), 1 / 12)]]
+    VTS_max_final_super_extra(I, B)
+    plt.show()
+
 if __name__ == '__main__':
-    sosiska()
+    VTS_test()

@@ -1,13 +1,16 @@
+import numpy as np
+from matplotlib import pyplot as plt
+from sympy import lambdify, solve, dsolve, Derivative, Eq, Dummy, factor, Wild, simplify, Add
+from sympy.core.function import AppliedUndef
+
+from ArbitraryTaskSolver.numeric.diffalg import main
+
+
 def VTS_max_final_super_extra(Integralus, Boundaries):
-    def mydisplay(expr):
-        display(Latex(latex(expr)))
     t = Integralus.args[1][0]
     horizon = list(Integralus.args[1][1:])
     L = Integralus.args[0]
     variables = list(L.atoms(AppliedUndef))
-    mydisplay(variables)
-    mydisplay(L)
-    mydisplay(Boundaries)
 
     def diff_degree_order(L):
         pairs_var_order = [{i.args[0] : i.args[1][1]} for i in list(L.find(Derivative))]
@@ -77,11 +80,9 @@ def VTS_max_final_super_extra(Integralus, Boundaries):
           for j in range(len(variables)):
             if FinalSol[i].rhs.subs(t,B[j][0].args[0].args[0]) == B[j][0].rhs:
               FixedSolution.append( Eq(B[j][0].lhs.subs(B[j][0].args[0].args[0],t),  FinalSol[i].rhs  ) )
-        mydisplay(FixedSolution)
         return FixedSolution
 
     Lagrange = get_lagrange_equations(L,variables)
-    mydisplay(Lagrange)
     boundary_for_numeric = boundary_for_numeric(Boundaries)
     counter = np.sum([1 for eq in Lagrange if eq.find(Derivative)])
     if counter == len(Lagrange): #diff system only
@@ -90,11 +91,8 @@ def VTS_max_final_super_extra(Integralus, Boundaries):
                 Solution = [dsolve(Lagrange[0])]
             else:
                 Solution = dsolve(Lagrange, variables)
-            mydisplay(Solution)
             const_sol = find_consts_with_derivatives(Solution, Boundaries, variables)
-            mydisplay(const_sol)
             FinalSolution = FinalSolution(Solution, const_sol, variables)
-            mydisplay(FinalSolution)
             FixedSolution = fixed_solution(FinalSolution, variables, Boundaries)
             lam_f = lambdify(t, FinalSolution[0].rhs)
             t = np.linspace(float(horizon[0]), float(horizon[1]), 100)
@@ -120,4 +118,3 @@ def VTS_max_final_super_extra(Integralus, Boundaries):
     for i in range(len(ret)):
       plt.scatter(T, ret[vars_names[i]][1::], label=vars_names[i])
     return Solution
-g = VTS_max_final_super_extra(I, B)
