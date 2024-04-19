@@ -47,17 +47,22 @@ def numeric_dsolve_test():
 def main_test():
     t = symbols('t')
     x = symbols('x', cls=Function)
-    #T, ret, vars_names = main( [Eq( x(t).diff(t,2), 0  )], [ Eq( x(t).diff(t).subs(t,0), 2), Eq(x(1), 2) ] , 0, 1)
-    #T, ret, vars_names = main( [Eq( x(t).diff(t,3), 0  )], [ Eq( 2*x(0) + x(t).diff(t).subs(t,0), 0), Eq(x(1), 1), Eq(x(t).diff(t,2).subs(t,0), 2) ] , 0, 1)
-    T, ret, vars_names = main( [Eq( x(t).diff(t,4), 0  )], [ Eq(x(0), 0), Eq(x(t).diff(t).subs(t,0), 0), Eq(x(t).diff(t,2).subs(t,1) + x(1), 8/3), Eq(x(t).diff(t,3).subs(t,0), 1) ] , 0, 1)
+    # T, ret, vars_names = main( [Eq( x(t).diff(t,2), 0  )], [ Eq( 2*(x(t).diff(t).subs(t,0)+ x(0)) , 1), Eq(x(0), 0) ] , 0, 1)
+    # T, ret, vars_names = main( [Eq( x(t).diff(t,3), 0  )], [ Eq( x(0) + 2*x(t).diff(t).subs(t,1), 4), Eq(x(1), 1), Eq(x(t).diff(t,2).subs(t,1), 2) ] , 0, 1)
+    # T, ret, vars_names = main( [Eq( x(t).diff(t,4), 0  )], [ Eq(x(0), 0), Eq(x(t).diff(t).subs(t,0), 0), Eq(x(t).diff(t,2).subs(t,1) + x(1), 8/3), Eq(x(t).diff(t,3).subs(t,0), 1) ] , 0, 1)
+    # T, ret, vars_names = main( [Eq( x(t).diff(t) - t*sin(t), 0  )], [ Eq(x(0), 0)] , 0, 1)
+    T, ret, vars_names = main([Eq(x(t).diff(t) - sin(t) ** 10 * cos(t), 0)], [Eq(x(0), 0)], 0, 5)
     for i in range(len(ret)):
-      plt.scatter(T, ret[vars_names[i]][:len(T)], label=vars_names[i])
-    time = np.linspace(0, 1, 50)
-    plt.plot(time, time**3 / 6 + time**2 / 2, color = 'blue')
+        plt.scatter(T, ret[vars_names[i]][:len(T)], label=vars_names[i])
+    time = np.linspace(0, 5, 500)
+    plt.plot(time, np.sin(time) ** 11 / 11, color='blue')
+    # plt.plot(time, np.sin(time) - time * np.cos(time) , color = 'blue')
+    # plt.plot(time, time**3 / 6 + time**2 / 2, color = 'blue')
+    # plt.plot(time, time**2, color = 'blue')
     plt.show()
 
-#if __name__ == '__main__':
-#    main_test()
+if __name__ == '__main__':
+    main_test()
 
 
 def VTS_test():
@@ -69,5 +74,5 @@ def VTS_test():
     VTS_max_final_super_extra(I, B)
     plt.show()
 
-if __name__ == '__main__':
-    VTS_test()
+#if __name__ == '__main__':
+#    VTS_test()
