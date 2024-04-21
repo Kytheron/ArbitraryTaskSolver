@@ -2,12 +2,12 @@
 from matplotlib import pyplot as plt
 
 from ArbitraryTaskSolver.numeric.diff import shooting_method
-from ArbitraryTaskSolver.numeric.diff import numeric_dsolve
+from ArbitraryTaskSolver.numeric.diff import numeric_cauchy_dsolve
 from sympy import *
 import numpy as np
 
-from ArbitraryTaskSolver.numeric.diffalg import main
-from ArbitraryTaskSolver.optimization.variational import VTS_max_final_super_extra
+from ArbitraryTaskSolver.numeric.diffalg import general_numerical_solver
+from ArbitraryTaskSolver.optimization.variational import VTS
 
 
 def shooting_method_test():
@@ -47,11 +47,11 @@ def numeric_dsolve_test():
 def main_test():
     t = symbols('t')
     x = symbols('x', cls=Function)
-    # T, ret, vars_names = main( [Eq( x(t).diff(t,2), 0  )], [ Eq( 2*(x(t).diff(t).subs(t,0)+ x(0)) , 1), Eq(x(0), 0) ] , 0, 1)
-    # T, ret, vars_names = main( [Eq( x(t).diff(t,3), 0  )], [ Eq( x(0) + 2*x(t).diff(t).subs(t,1), 4), Eq(x(1), 1), Eq(x(t).diff(t,2).subs(t,1), 2) ] , 0, 1)
-    # T, ret, vars_names = main( [Eq( x(t).diff(t,4), 0  )], [ Eq(x(0), 0), Eq(x(t).diff(t).subs(t,0), 0), Eq(x(t).diff(t,2).subs(t,1) + x(1), 8/3), Eq(x(t).diff(t,3).subs(t,0), 1) ] , 0, 1)
-    # T, ret, vars_names = main( [Eq( x(t).diff(t) - t*sin(t), 0  )], [ Eq(x(0), 0)] , 0, 1)
-    T, ret, vars_names = main([Eq(x(t).diff(t) - sin(t) ** 10 * cos(t), 0)], [Eq(x(0), 0)], 0, 5)
+    # T, ret, vars_names = general_numerical_solver( [Eq( x(t).diff(t,2), 0  )], [ Eq( 2*(x(t).diff(t).subs(t,0)+ x(0)) , 1), Eq(x(0), 0) ] , 0, 1)
+    # T, ret, vars_names = general_numerical_solver( [Eq( x(t).diff(t,3), 0  )], [ Eq( x(0) + 2*x(t).diff(t).subs(t,1), 4), Eq(x(1), 1), Eq(x(t).diff(t,2).subs(t,1), 2) ] , 0, 1)
+    # T, ret, vars_names = general_numerical_solver( [Eq( x(t).diff(t,4), 0  )], [ Eq(x(0), 0), Eq(x(t).diff(t).subs(t,0), 0), Eq(x(t).diff(t,2).subs(t,1) + x(1), 8/3), Eq(x(t).diff(t,3).subs(t,0), 1) ] , 0, 1)
+    # T, ret, vars_names = general_numerical_solver( [Eq( x(t).diff(t) - t*sin(t), 0  )], [ Eq(x(0), 0)] , 0, 1)
+    T, ret, vars_names = general_numerical_solver([Eq(x(t).diff(t) - sin(t) ** 10 * cos(t), 0)], [Eq(x(0), 0)], 0, 5)
     for i in range(len(ret)):
         plt.scatter(T, ret[vars_names[i]][:len(T)], label=vars_names[i])
     time = np.linspace(0, 5, 500)
@@ -61,8 +61,8 @@ def main_test():
     # plt.plot(time, time**2, color = 'blue')
     plt.show()
 
-if __name__ == '__main__':
-    main_test()
+#if __name__ == '__main__':
+#    main_test()
 
 
 def VTS_test():
@@ -71,8 +71,8 @@ def VTS_test():
     L = -2 * x(t) * t + (x(t).diff(t, 2)) ** 2
     I = Integral(L, (t, 0, 1))
     B = [[Eq(x(list(I.args[1])[1]), 0), Eq(x(list(I.args[1])[2]), 1 / 120), Eq((x(t).diff(t)).subs(t, list(I.args[1])[1]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[2]), 1 / 12)]]
-    VTS_max_final_super_extra(I, B)
+    VTS(I, B)
     plt.show()
 
-#if __name__ == '__main__':
-#    VTS_test()
+if __name__ == '__main__':
+    VTS_test()
