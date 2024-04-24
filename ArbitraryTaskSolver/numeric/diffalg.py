@@ -2,7 +2,6 @@ import numpy as np
 from sympy import Derivative, Function, Symbol, Eq, Integer, nsolve, Add, symbols, Wild
 from sympy.core.function import AppliedUndef
 
-t = symbols('t', real = True)
 def general_numerical_solver(system, boundaries, tmin, tmax):
     def add_leading_nulls(s, N):
       return '0' * (N - len(s)) + s
@@ -78,9 +77,9 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
     # new arch
     i = Symbol('i')
 
-    def gryaz(expr):
+    def variable_return(expr):
         return expr if expr in functions else expr.args[0]
-    linearized_subs = {k: finite_diff_dict[v](gryaz(k), h, i) for k,v in diff_order_total.items()}
+    linearized_subs = {k: finite_diff_dict[v](variable_return(k), h, i) for k,v in diff_order_total.items()}
     linearized_subs |= {vremya: tmin + i*h}
     linearized_system = [eq.subs(linearized_subs) for eq in system]
     full_system = []
