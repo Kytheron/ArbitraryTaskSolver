@@ -37,7 +37,7 @@ def shooting_method_test():
 def numeric_dsolve_test():
     t = symbols('t')
     x = symbols('x', cls=Function)
-    t_sol, x_sol = numeric_dsolve(0, 50, 500, Eq(x(t).diff(t, 2)  + sin(x(t)) + 75*x(t)**3, 0), [0, 1])
+    t_sol, x_sol = numeric_cauchy_dsolve(0, 50, 500, Eq(x(t).diff(t, 2)  + sin(x(t)) + 75*x(t)**3, 0), [0, 1])
     plt.plot(t_sol, x_sol)
     plt.show()
 
@@ -61,8 +61,8 @@ def main_test():
     # plt.plot(time, time**2, color = 'blue')
     plt.show()
 
-#if __name__ == '__main__':
-#    main_test()
+if __name__ == '__main__':
+    main_test()
 
 
 def VTS_test():
@@ -74,5 +74,5 @@ def VTS_test():
     VTS(I, B)
     plt.show()
 
-if __name__ == '__main__':
-    VTS_test()
+#if __name__ == '__main__':
+#    VTS_test()
