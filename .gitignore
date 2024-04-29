@@ -4,3 +4,6 @@ venv
 .pyc
 __pycache__
 *.pyc
+ArbitraryTaskSolver/__pycache__/__init__.cpython-39.pyc
+ArbitraryTaskSolver/numeric/__pycache__/__init__.cpython-39.pyc
+ArbitraryTaskSolver/numeric/__pycache__/diff.cpython-39.pyc
