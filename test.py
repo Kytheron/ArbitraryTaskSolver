@@ -61,18 +61,21 @@ def main_test():
     # plt.plot(time, time**2, color = 'blue')
     plt.show()
 
-if __name__ == '__main__':
-    main_test()
+#if __name__ == '__main__':
+#    main_test()
 
 
 def VTS_test():
-    t = symbols('t')
-    x = symbols('x', cls=Function)
-    L = -2 * x(t) * t + (x(t).diff(t, 2)) ** 2
-    I = Integral(L, (t, 0, 1))
-    B = [[Eq(x(list(I.args[1])[1]), 0), Eq(x(list(I.args[1])[2]), 1 / 120), Eq((x(t).diff(t)).subs(t, list(I.args[1])[1]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[2]), 1 / 12)]]
+    a, b, c, m, t, w, e, mu, rho, g, l = symbols('a b c m t w e μ ρ g l', real=True, positive=True)
+    x, y, z, u, v, L, A = symbols('x y z u v L A', cls=Function)
+    #L = -2 * x(t) * t + (x(t).diff(t, 2)) ** 2
+    #I = Integral(L, (t, 0, 1))
+    #B = [[Eq(x(list(I.args[1])[1]), 0), Eq(x(list(I.args[1])[2]), 1 / 120), Eq((x(t).diff(t)).subs(t, list(I.args[1])[1]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[2]), 1 / 12)]]
+    L = 1 / 2 * mu * x(t).diff(t, 2) ** 2 + rho * g * x(t)
+    I = Integral(L, (t, -1, 1))
+    B = [[Eq(x(list(I.args[1])[1]), 0), Eq(x(list(I.args[1])[2]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[1]), 0), Eq((x(t).diff(t)).subs(t, list(I.args[1])[2]), 0)]]
     VTS(I, B)
     plt.show()
 
-#if __name__ == '__main__':
-#    VTS_test()
+if __name__ == '__main__':
+    VTS_test()

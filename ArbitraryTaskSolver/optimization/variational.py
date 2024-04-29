@@ -11,7 +11,12 @@ def VTS(Integralus, Boundaries):
     horizon = list(Integralus.args[1][1:])
     L = Integralus.args[0]
     variables = list(L.atoms(AppliedUndef))
+    free_symbols = L.free_symbols - {t}
 
+    config_dict = {}
+    if free_symbols:
+        for v in free_symbols:
+            config_dict[v] = input(f'Введите числовое значение для {v}:')
     def diff_degree_order(L):
         pairs_var_order = [{i.args[0] : i.args[1][1]} for i in list(L.find(Derivative))]
         variables_and_order = []
@@ -68,9 +73,13 @@ def VTS(Integralus, Boundaries):
                 const_eq.append( Eq(B[v][i].rhs, Diff_Solution[v].rhs.subs(t,B[v][i].lhs.args[2][0])) )
         return solve(const_eq)
 
-    def FinalSolution(Solution, const_sol, variables):
+    def final_solution(Solution, const_sol, variables):
         FinalSolution = []
-        for i in range(len(variables)):
+        if type(const_sol) == list:
+          for i in range(len(variables)):
+            FinalSolution.append(Solution[i].subs(const_sol[0]))
+        elif type(const_sol) == dict:
+          for i in range(len(variables)):
             FinalSolution.append(Solution[i].subs(const_sol))
         return FinalSolution
     
@@ -92,15 +101,15 @@ def VTS(Integralus, Boundaries):
             else:
                 Solution = dsolve(Lagrange, variables)
             const_sol = find_consts_with_derivatives(Solution, Boundaries, variables)
-            FinalSolution = FinalSolution(Solution, const_sol, variables)
+            FinalSolution = final_solution(Solution, const_sol, variables)
             FixedSolution = fixed_solution(FinalSolution, variables, Boundaries)
-            lam_f = lambdify(t, FinalSolution[0].rhs)
+            FixedSubstitutedSolution = [i.subs(config_dict) for i in FixedSolution]
+            lam_f = lambdify(t, FixedSubstitutedSolution[0].rhs)
             t = np.linspace(float(horizon[0]), float(horizon[1]), 100)
             sol = [ lam_f(t[i]) for i in range(len(t))]
             plt.plot(t, sol, color = 'blue', lw = 2 )
-            print(FinalSolution)
         except NotImplementedError:
-              T, ret, vars_names = general_numerical_solver(Lagrange, boundary_for_numeric,horizon[0], horizon[1])
+              T, ret, vars_names = general_numerical_solver([i.subs(config_dict) for i in Lagrange], boundary_for_numeric,horizon[0], horizon[1])
               for i in range(len(ret)):
                 plt.scatter(T, ret[vars_names[i]][1::], label=vars_names[i])
 

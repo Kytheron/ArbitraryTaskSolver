@@ -89,7 +89,7 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
     right = max([rightmost_point_define(boundaries) - diff_order + 1, N + 1 - diff_order + 1])
     for k in range(left,right):
         for eq in linearized_system:
-            linearized_i = eq.subs({i: k})#.subs({b.lhs.func(Integer((b.lhs.args[0] - tmin)/h)+1): b.rhs for b in boundaries})
+            linearized_i = eq.subs({i: k})
             full_system.append(linearized_i)
             setka_variables.update(linearized_i.find(AppliedUndef))
 
@@ -100,6 +100,7 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
       if ddo == 0:
         eq_to_add = ax_eq.lhs.match(wild_n_order)[dif]*(q.lhs.func(Integer((q.lhs.args[0] - tmin)/h)+1))
       if ddo > 0:
+        t = variables[0].args[0]
         x = q.lhs.args[0].args[0]
         i = Integer((q.lhs.args[2][0] - tmin)/h + 1)
         if ddo == 1:
