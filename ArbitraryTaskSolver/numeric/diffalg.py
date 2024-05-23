@@ -52,7 +52,6 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
     # diff order total aldready done for diffeqs, now add variables
     diff_order_total = diff_order_total | {v: 0 for v in functions}
     variables = list(functions)
-
     def rightmost_point_define(boundaries):
         high_index = []
         for i in range(len(boundaries)):
@@ -101,6 +100,7 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
       if ddo == 0:
         eq_to_add = ax_eq.lhs.match(wild_n_order)[dif]*(q.lhs.func(Integer((q.lhs.args[0] - tmin)/h)+1))
       if ddo > 0:
+        t = variables[0].args[0]
         x = q.lhs.args[0].args[0]
         i = Integer((q.lhs.args[2][0] - tmin)/h + 1)
         if ddo == 1:
@@ -110,6 +110,7 @@ def general_numerical_solver(system, boundaries, tmin, tmax):
         elif ddo == 3:
           eq_to_add = ax_eq.lhs.match(wild_n_order)[dif]*(x.subs(t, i+3) - 3*x.subs(t, i+2) + 3*x.subs(t, i+1) - x.subs(t, i)  )/h**3
       return eq_to_add
+
 
     order_of_equation =  diff_degree_order(system[0].lhs,[variables[0]])[0][variables[0]]
     for bnd in boundaries:
